@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Курс — mSchool</title>
+  <link rel="stylesheet" href="/assets/styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="/">← mSchool</a>
+    <nav id="user-nav" aria-label="Аккаунт"></nav>
+  </header>
+
+  <main class="page">
+    <!-- Query-параметр `?id=<uuid>` управляет содержимым обеих секций. -->
+    <article id="course-view" class="card" aria-busy="true">
+      <p class="muted">Загрузка курса…</p>
+    </article>
+
+    <!-- Форма добавления урока. Видна только автору курса. -->
+    <section id="add-lesson" hidden>
+      <article class="card">
+        <h3>Новый урок</h3>
+        <form id="lesson-form" class="stack" novalidate>
+          <label>Название<input name="title" required maxlength="200" placeholder="Event loop"></label>
+          <label>Содержимое<textarea name="content" required maxlength="100000" rows="6" placeholder="Основной материал урока…"></textarea></label>
+          <button class="btn btn-primary">Добавить урок</button>
+        </form>
+      </article>
+    </section>
+
+    <section>
+      <div class="section-header">
+        <h2>Уроки</h2>
+        <span id="lessons-total" class="muted"></span>
+      </div>
+      <ol id="lessons-list" class="lessons" aria-busy="true"></ol>
+    </section>
+  </main>
+
+  <div id="flash" class="flash" role="status" aria-live="polite" hidden></div>
+
+  <script type="module" src="/js/course.js"></script>
+</body>
+</html>

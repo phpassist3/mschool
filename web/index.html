@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>mSchool — курсы</title>
+  <meta name="description" content="mSchool — небольшая LMS-платформа: курсы и уроки.">
+  <link rel="stylesheet" href="/assets/styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="/">mSchool</a>
+    <nav id="user-nav" aria-label="Аккаунт"></nav>
+  </header>
+
+  <main class="page">
+    <!-- Формы входа и регистрации. Скрыты, когда есть валидный JWT. -->
+    <section id="auth-section" class="grid-2" hidden>
+      <article class="card">
+        <h2>Войти</h2>
+        <form id="login-form" class="stack" novalidate>
+          <label>Email<input name="email" type="email" autocomplete="email" required></label>
+          <label>Пароль<input name="password" type="password" autocomplete="current-password" required minlength="8"></label>
+          <button class="btn btn-primary">Войти</button>
+        </form>
+      </article>
+      <article class="card">
+        <h2>Регистрация</h2>
+        <form id="register-form" class="stack" novalidate>
+          <label>Email<input name="email" type="email" autocomplete="email" required></label>
+          <label>Пароль <span class="hint">не короче 8 символов</span><input name="password" type="password" autocomplete="new-password" required minlength="8"></label>
+          <button class="btn btn-primary">Создать аккаунт</button>
+        </form>
+      </article>
+    </section>
+
+    <!-- Форма создания курса. Показывается только авторизованным. -->
+    <section id="compose-section" hidden>
+      <article class="card">
+        <h2>Новый курс</h2>
+        <form id="course-form" class="stack" novalidate>
+          <label>Название<input name="title" required maxlength="200" placeholder="Intro to TypeScript"></label>
+          <label>Описание<textarea name="description" required maxlength="5000" rows="3" placeholder="О чём курс, для кого…"></textarea></label>
+          <button class="btn btn-primary">Создать курс</button>
+          <p class="hint">Ограничение: не более 3 курсов в час.</p>
+        </form>
+      </article>
+    </section>
+
+    <section>
+      <div class="section-header">
+        <h2>Все курсы</h2>
+        <span id="courses-total" class="muted"></span>
+      </div>
+      <ul id="courses-list" class="courses" aria-busy="true"></ul>
+      <nav id="courses-pager" class="pager" aria-label="Страницы"></nav>
+    </section>
+  </main>
+
+  <!-- Toast-сообщения об ошибках API и успехах. -->
+  <div id="flash" class="flash" role="status" aria-live="polite" hidden></div>
+
+  <script type="module" src="/js/home.js"></script>
+</body>
+</html>
