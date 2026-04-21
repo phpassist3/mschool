@@ -1,0 +1,49 @@
+# Два сервиса в одной приватной сети.
+#
+# - `db` НЕ публикуется на хост: API ходит к ней через compose-мост
+#   по имени сервиса. Так мы не конфликтуем с другим Postgres, уже
+#   работающим на хосте (типичная ситуация на мультипроектном VPS).
+# - `api` публикуется только на 127.0.0.1 — публичный трафик должен
+#   приходить через reverse proxy (nginx), который терминирует TLS.
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-lms}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-lms}
+      POSTGRES_DB: ${POSTGRES_DB:-lms}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      # Блокируем старт API до момента, когда Postgres реально
+      # готов принимать соединения — а не просто «контейнер up».
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-lms} -d ${POSTGRES_DB:-lms}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  api:
+    build: .
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-lms}:${POSTGRES_PASSWORD:-lms}@db:5432/${POSTGRES_DB:-lms}?schema=public
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET is required}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-1d}
+      PORT: 3000
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      COURSE_RATE_LIMIT_MAX: ${COURSE_RATE_LIMIT_MAX:-3}
+      COURSE_RATE_LIMIT_WINDOW_MINUTES: ${COURSE_RATE_LIMIT_WINDOW_MINUTES:-60}
+    ports:
+      # Bind только на loopback — reverse proxy на хосте стучит сюда.
+      - "127.0.0.1:${API_HOST_PORT:-3000}:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+    # При каждом старте применяем висящие миграции и поднимаем API.
+    # `migrate deploy` идемпотентен, запускать повторно безопасно.
+    command: sh -c "npx prisma migrate deploy && node dist/index.js"
+
+volumes:
+  pgdata:

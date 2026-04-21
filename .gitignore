@@ -1,0 +1,11 @@
+node_modules
+dist
+.env
+.env.local
+*.log
+.DS_Store
+coverage
+# IDE / editor session state
+.claude/
+.vscode/
+.idea/
