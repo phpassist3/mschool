@@ -17,6 +17,12 @@ export const lessonCourseParams = z.object({
   courseId: z.string().uuid(),
 });
 
+// Для DELETE: :courseId приходит от родительского роутера, :id — от нашего.
+export const lessonDeleteParams = z.object({
+  courseId: z.string().uuid(),
+  id: z.string().uuid(),
+});
+
 export const listLessonsQuery = z.object({
   page: z.coerce.number().int().positive().default(1),
   limit: z.coerce.number().int().positive().max(100).default(50),

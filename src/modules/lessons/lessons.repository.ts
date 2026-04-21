@@ -9,6 +9,18 @@ export const lessonsRepository = {
   create: (data: { title: string; content: string; courseId: string }) =>
     prisma.lesson.create({ data }),
 
+  findById: (id: string) => prisma.lesson.findUnique({ where: { id } }),
+
+  /**
+   * Удаляем только если урок реально принадлежит указанному курсу —
+   * защищаемся от попытки удалить «чужой» урок через URL-инъекцию.
+   * Возвращаем число затронутых строк, чтобы сервис мог выдать 404.
+   */
+  deleteIfInCourse: async (id: string, courseId: string) => {
+    const res = await prisma.lesson.deleteMany({ where: { id, courseId } });
+    return res.count;
+  },
+
   listByCourse: (courseId: string, page: number, limit: number) =>
     prisma.$transaction([
       prisma.lesson.findMany({

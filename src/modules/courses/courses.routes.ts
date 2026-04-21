@@ -43,3 +43,11 @@ coursesRouter.get(
   validate(courseIdParams, 'params'),
   asyncHandler(coursesController.getById),
 );
+
+// Удаление — только автору курса. Каскад подчистит уроки/тесты.
+coursesRouter.delete(
+  '/:id',
+  requireAuth,
+  validate(courseIdParams, 'params'),
+  asyncHandler(coursesController.delete),
+);

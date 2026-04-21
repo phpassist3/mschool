@@ -65,12 +65,25 @@ export const api = {
   // --- Courses ---
   listCourses: ({ page = 1, limit = 10 } = {}) =>
     request(`/courses?page=${page}&limit=${limit}`),
-  getCourse:   (id) => request(`/courses/${encodeURIComponent(id)}`),
+  getCourse:    (id) => request(`/courses/${encodeURIComponent(id)}`),
   createCourse: (data) => request('/courses', { method: 'POST', body: data, auth: true }),
+  deleteCourse: (id) => request(`/courses/${encodeURIComponent(id)}`, { method: 'DELETE', auth: true }),
 
   // --- Lessons ---
   listLessons: (courseId, { page = 1, limit = 50 } = {}) =>
     request(`/courses/${encodeURIComponent(courseId)}/lessons?page=${page}&limit=${limit}`),
   createLesson: (courseId, data) =>
     request(`/courses/${encodeURIComponent(courseId)}/lessons`, { method: 'POST', body: data, auth: true }),
+  deleteLesson: (courseId, lessonId) =>
+    request(`/courses/${encodeURIComponent(courseId)}/lessons/${encodeURIComponent(lessonId)}`, { method: 'DELETE', auth: true }),
+
+  // --- Quizzes (1:1 к уроку) ---
+  // getQuiz: 404 значит «теста нет», это ожидаемый кейс — вызывающий код обрабатывает.
+  getQuiz:        (lessonId) => request(`/lessons/${encodeURIComponent(lessonId)}/quiz`),
+  upsertQuiz:     (lessonId, data) =>
+    request(`/lessons/${encodeURIComponent(lessonId)}/quiz`, { method: 'PUT', body: data, auth: true }),
+  deleteQuiz:     (lessonId) =>
+    request(`/lessons/${encodeURIComponent(lessonId)}/quiz`, { method: 'DELETE', auth: true }),
+  attemptQuiz:    (lessonId, answers) =>
+    request(`/lessons/${encodeURIComponent(lessonId)}/quiz/attempt`, { method: 'POST', body: { answers } }),
 };

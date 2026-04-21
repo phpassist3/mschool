@@ -37,7 +37,33 @@ model Lesson {
   courseId  String   @map("course_id")
   course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now()) @map("created_at")
+  quiz      Quiz?
 
   @@index([courseId])
   @@map("lessons")
+}
+
+model Quiz {
+  id           String     @id @default(uuid())
+  lessonId     String     @unique @map("lesson_id")
+  lesson       Lesson     @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  passingScore Int        @default(70) @map("passing_score")
+  createdAt    DateTime   @default(now()) @map("created_at")
+  questions    Question[]
+
+  @@map("quizzes")
+}
+
+model Question {
+  id           String   @id @default(uuid())
+  quizId       String   @map("quiz_id")
+  quiz         Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  text         String
+  options      String[]
+  correctIndex Int      @map("correct_index")
+  position     Int      @default(0)
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  @@index([quizId, position])
+  @@map("questions")
 }

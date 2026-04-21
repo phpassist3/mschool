@@ -35,4 +35,17 @@ export const coursesService = {
       },
     };
   },
+
+  /**
+   * Удалить курс может только его автор. Каскадное удаление в схеме
+   * БД снесёт все уроки, тесты и вопросы одной транзакцией.
+   */
+  async delete(userId: string, id: string) {
+    const course = await coursesRepository.findById(id);
+    if (!course) throw new AppError(404, 'Course not found', 'COURSE_NOT_FOUND');
+    if (course.authorId !== userId) {
+      throw new AppError(403, 'Only the course author can delete the course', 'FORBIDDEN');
+    }
+    await coursesRepository.delete(id);
+  },
 };

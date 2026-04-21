@@ -22,4 +22,10 @@ export const lessonsController = {
     const { page, limit } = req.query as unknown as { page: number; limit: number };
     res.json(await lessonsService.listByCourse(courseId, page, limit));
   },
+
+  async delete(req: Request, res: Response) {
+    const { courseId, id } = req.params as { courseId: string; id: string };
+    await lessonsService.delete(courseId, id, req.user!.sub);
+    res.status(204).end();
+  },
 };

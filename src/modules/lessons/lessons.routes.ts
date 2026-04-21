@@ -6,6 +6,7 @@ import { lessonsController } from './lessons.controller';
 import {
   createLessonSchema,
   lessonCourseParams,
+  lessonDeleteParams,
   listLessonsQuery,
 } from './lessons.schemas';
 
@@ -29,4 +30,11 @@ lessonsRouter.get(
   validate(lessonCourseParams, 'params'),
   validate(listLessonsQuery, 'query'),
   asyncHandler(lessonsController.list),
+);
+
+lessonsRouter.delete(
+  '/:id',
+  requireAuth,
+  validate(lessonDeleteParams, 'params'),
+  asyncHandler(lessonsController.delete),
 );

@@ -4,6 +4,7 @@ import { errorHandler } from './middleware/errorHandler';
 import { authRouter } from './modules/auth/auth.routes';
 import { coursesRouter } from './modules/courses/courses.routes';
 import { lessonsRouter } from './modules/lessons/lessons.routes';
+import { quizzesRouter } from './modules/quizzes/quizzes.routes';
 import { logger } from './utils/logger';
 
 /**
@@ -37,6 +38,8 @@ export const createApp = () => {
   app.use('/api/auth', authRouter);
   app.use('/api/courses', coursesRouter);
   app.use('/api/courses/:courseId/lessons', lessonsRouter);
+  // Тесты привязаны к уроку; плоский URL упрощает клиент.
+  app.use('/api/lessons/:lessonId/quiz', quizzesRouter);
 
   // Единый формат 404 для всего, что не совпало с роутами выше.
   app.use((_req, res) => {

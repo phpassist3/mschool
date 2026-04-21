@@ -23,4 +23,11 @@ export const coursesController = {
     const { id } = req.params as { id: string };
     res.json(await coursesService.getById(id));
   },
+
+  async delete(req: Request, res: Response) {
+    const { id } = req.params as { id: string };
+    await coursesService.delete(req.user!.sub, id);
+    // 204 No Content — удалено, возвращать тело бессмысленно.
+    res.status(204).end();
+  },
 };

@@ -13,6 +13,9 @@ export const coursesRepository = {
 
   findById: (id: string) => prisma.course.findUnique({ where: { id } }),
 
+  // Каскад в схеме удалит все связанные уроки, квизы и вопросы.
+  delete: (id: string) => prisma.course.delete({ where: { id } }),
+
   listPaginated: (page: number, limit: number) =>
     prisma.$transaction([
       prisma.course.findMany({
